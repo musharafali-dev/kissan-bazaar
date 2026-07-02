@@ -63,8 +63,8 @@ export default function Footer() {
       </div>
       <div className="max-w-7xl mx-auto px-6 mt-8 pt-6 border-t border-white/10 text-center text-xs md:text-sm text-sage/50">
         {isUrdu 
-          ? `© ${new Date().getFullYear()} کسان بازار۔ کسانوں کے لیے گلگت بلتستان میں محبت کے ساتھ بنایا گیا۔ جملہ حقوق محفوظ ہیں۔`
-          : `© ${new Date().getFullYear()} Kissan Bazaar. Built for farmers with ❤️ in Gilgit-Baltistan. All Rights Reserved.`}
+          ? `© ${new Date().getFullYear()} کسان بازار۔ مشرف علی کی طرف سے کسانوں کے لیے گلگت بلتستان میں محبت کے ساتھ بنایا گیا۔ جملہ حقوق محفوظ ہیں۔`
+          : `© ${new Date().getFullYear()} Kissan Bazaar. Developed by Musharaf Ali. All Rights Reserved.`}
       </div>
     </footer>
   );

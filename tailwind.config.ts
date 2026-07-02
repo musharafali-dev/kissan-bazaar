@@ -60,6 +60,16 @@ const config = {
       backdropBlur: {
         xs: "2px",
       },
+      keyframes: {
+        marquee: {
+          "0%": { transform: "translateX(100%)" },
+          "100%": { transform: "translateX(-100%)" },
+        },
+      },
+      animation: {
+        marquee: "marquee 35s linear infinite",
+        "spin-slow": "spin 12s linear infinite",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

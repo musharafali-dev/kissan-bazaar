@@ -15,33 +15,20 @@ import {
   ChevronRight, 
   Send,
   Truck,
-  Wallet
+  Wallet,
+  Phone,
+  MessageCircle,
+  Star,
+  Sparkles,
+  Volume2
 } from "lucide-react";
 import { useLanguageStore } from "@/stores/useLanguageStore";
-
-interface Crop {
-  id: number;
-  nameEn: string;
-  nameUr: string;
-  farmerEn: string;
-  farmerUr: string;
-  locationEn: string;
-  locationUr: string;
-  price: number;
-  unitEn: string;
-  unitUr: string;
-  rating: number;
-  reviewsCount: number;
-  isOrganic: boolean;
-  grade: string;
-  image: string;
-  harvestedEn: string;
-  harvestedUr: string;
-  stock: number;
-}
+import { staticCrops, Crop } from "@/data/products";
 
 export default function MarketplacePage() {
   const { isUrdu } = useLanguageStore();
+  const [crops, setCrops] = useState<Crop[]>(staticCrops);
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [radius, setRadius] = useState(30);
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -92,132 +79,33 @@ export default function MarketplacePage() {
     status: "pending" | "packed" | "shipped" | "delivered";
   } | null>(null);
 
-  // Mock database crops
-  const initialCrops: Crop[] = [
-    {
-      id: 1,
-      nameEn: "Fresh Gilgit Apricots",
-      nameUr: "تازہ خوبانی گلگت",
-      farmerEn: "Sajid Ali",
-      farmerUr: "ساجد علی",
-      locationEn: "Hunza Valley, GB",
-      locationUr: "ہنزہ، گلگت بلتستان",
-      price: 180,
-      unitEn: "kg",
-      unitUr: "کلو",
-      rating: 4.9,
-      reviewsCount: 28,
-      isOrganic: true,
-      grade: "A",
-      image: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><rect width='400' height='300' fill='%23FFF8E7'/><circle cx='200' cy='160' r='80' fill='%23E9B44C'/><circle cx='180' cy='140' r='40' fill='%23F4A460' opacity='0.3'/><path d='M200 80 Q220 40 260 40 Q240 70 200 80' fill='%232D6A4F'/><circle cx='195' cy='155' r='5' fill='%23fff' opacity='0.6'/></svg>",
-      harvestedEn: "Today",
-      harvestedUr: "آج",
-      stock: 850
-    },
-    {
-      id: 2,
-      nameEn: "Red Swat Tomatoes",
-      nameUr: "سرخ ٹماٹر",
-      farmerEn: "Ghulam Rasool",
-      farmerUr: "غلام رسول",
-      locationEn: "Swat Valley, KP",
-      locationUr: "سوات، خیبر پختونخوا",
-      price: 120,
-      unitEn: "kg",
-      unitUr: "کلو",
-      rating: 4.8,
-      reviewsCount: 42,
-      isOrganic: true,
-      grade: "A",
-      image: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><rect width='400' height='300' fill='%23FFEEEE'/><circle cx='200' cy='160' r='80' fill='%23E63946'/><circle cx='170' cy='130' r='30' fill='%23FF5A5F' opacity='0.3'/><path d='M200 80 L190 60 L210 60 Z' fill='%232D6A4F'/><path d='M180 75 Q200 65 220 75' fill='none' stroke='%232D6A4F' stroke-width='8' stroke-linecap='round'/><circle cx='190' cy='145' r='5' fill='%23fff' opacity='0.6'/></svg>",
-      harvestedEn: "Yesterday",
-      harvestedUr: "کل",
-      stock: 450
-    },
-    {
-      id: 3,
-      nameEn: "Organic Red Potatoes",
-      nameUr: "نامیاتی آلو",
-      farmerEn: "Muhammad Irfan",
-      farmerUr: "محمد عرفان",
-      locationEn: "Okara, Punjab",
-      locationUr: "اوکاڑہ، پنجاب",
-      price: 80,
-      unitEn: "kg",
-      unitUr: "کلو",
-      rating: 4.7,
-      reviewsCount: 19,
-      isOrganic: true,
-      grade: "B",
-      image: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><rect width='400' height='300' fill='%23F5EDD0'/><ellipse cx='200' cy='160' rx='95' ry='70' fill='%23A47551'/><circle cx='160' cy='140' r='4' fill='%237B5537'/><circle cx='240' cy='170' r='3' fill='%237B5537'/><circle cx='200' cy='130' r='3' fill='%237B5537'/><circle cx='170' cy='140' r='20' fill='%23BC987E' opacity='0.2'/></svg>",
-      harvestedEn: "2 days ago",
-      harvestedUr: "2 دن پہلے",
-      stock: 2400
-    },
-    {
-      id: 4,
-      nameEn: "Sindhri Mangoes",
-      nameUr: "سندھڑی آم",
-      farmerEn: "Bashir Khan",
-      farmerUr: "بشیر خان",
-      locationEn: "Mirpur Khas, Sindh",
-      locationUr: "میرپور خاص، سندھ",
-      price: 250,
-      unitEn: "kg",
-      unitUr: "کلو",
-      rating: 5.0,
-      reviewsCount: 88,
-      isOrganic: false,
-      grade: "A",
-      image: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><rect width='400' height='300' fill='%23FFFDE6'/><path d='M200 90 C150 90 120 140 120 180 C120 220 170 230 200 230 C240 230 280 190 280 150 C280 110 240 90 200 90 Z' fill='%23FFC300'/><path d='M190 90 Q170 50 150 60 Q180 75 190 90' fill='%232D6A4F'/><circle cx='180' cy='130' r='10' fill='%23FFD700' opacity='0.5'/></svg>",
-      harvestedEn: "Today",
-      harvestedUr: "آج",
-      stock: 1500
-    },
-    {
-      id: 5,
-      nameEn: "Desi Buffalo Ghee",
-      nameUr: "دیسی گھی",
-      farmerEn: "Amjad Ali",
-      farmerUr: "امجد علی",
-      locationEn: "Sahiwal, Punjab",
-      locationUr: "ساہیوال، پنجاب",
-      price: 1800,
-      unitEn: "kg",
-      unitUr: "کلو",
-      rating: 4.9,
-      reviewsCount: 35,
-      isOrganic: true,
-      grade: "Premium",
-      image: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><rect width='400' height='300' fill='%23FFFDF0'/><path d='M150 220 L250 220 L240 120 L160 120 Z' fill='%23E9B44C'/><circle cx='200' cy='160' r='25' fill='%23FFF'/><path d='M200 70 C180 70 160 120 160 120 L240 120 C240 120 220 70 200 70 Z' fill='%23A47551'/></svg>",
-      harvestedEn: "3 days ago",
-      harvestedUr: "3 دن پہلے",
-      stock: 120
-    },
-    {
-      id: 6,
-      nameEn: "Hunza Sweet Cherries",
-      nameUr: "ہنزہ سرخ چیری",
-      farmerEn: "Sajid Ali",
-      farmerUr: "ساجد علی",
-      locationEn: "Hunza Valley, GB",
-      locationUr: "ہنزہ، گلگت بلتستان",
-      price: 320,
-      unitEn: "kg",
-      unitUr: "کلو",
-      rating: 4.8,
-      reviewsCount: 16,
-      isOrganic: true,
-      grade: "A",
-      image: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><rect width='400' height='300' fill='%23FFF0F5'/><circle cx='170' cy='170' r='40' fill='%23900C3F'/><circle cx='240' cy='180' r='35' fill='%23C70039'/><path d='M170 130 Q200 100 230 110' fill='none' stroke='%232D6A4F' stroke-width='6' stroke-linecap='round'/><path d='M240 145 Q210 110 230 110' fill='none' stroke='%232D6A4F' stroke-width='6' stroke-linecap='round'/></svg>",
-      harvestedEn: "Yesterday",
-      harvestedUr: "کل",
-      stock: 380
-    }
-  ];
+  // EXTRA MODULE 1: Call/WhatsApp Direct Contact Modal
+  const [contactFarmer, setContactFarmer] = useState<Crop | null>(null);
+  const [callingState, setCallingState] = useState<"idle" | "ringing" | "connected">("idle");
+
+  // EXTRA MODULE 2: Review & Feedback Modal
+  const [reviewCrop, setReviewCrop] = useState<Crop | null>(null);
+  const [userStars, setUserStars] = useState(5);
+  const [userComment, setUserComment] = useState("");
+  const [reviewSuccess, setReviewSuccess] = useState(false);
+
+  // EXTRA MODULE 3: Kissan Dost AI Advisor Widget
+  const [showAiAdvisor, setShowAiAdvisor] = useState(false);
+  const [aiHistory, setAiHistory] = useState<{ sender: "user" | "ai", text: string }[]>([
+    { sender: "ai", text: "Assalam-o-Alaikum! I am Kissan Dost AI. How can I help you today? / السلام علیکم! میں کسان دوست اے آئی ہوں۔ میں آج آپ کی کیا مدد کر سکتا ہوں؟" }
+  ]);
+  const [aiInput, setAiInput] = useState("");
+
+  // Ticker rates derived from crops for variety
+  const tickerRates = crops.slice(0, 10).map(c => ({
+    name: isUrdu ? c.nameUr.split(" (")[0] : c.nameEn.replace("Fresh ", ""),
+    price: c.price,
+    unit: isUrdu ? c.unitUr : c.unitEn,
+    change: Math.random() > 0.4 ? `+${Math.floor(2 + Math.random() * 8)}%` : `-${Math.floor(1 + Math.random() * 4)}%`
+  }));
 
   // Filter Logic
-  const filteredCrops = initialCrops.filter((crop) => {
+  const filteredCrops = crops.filter((crop) => {
     const cropName = isUrdu ? crop.nameUr : crop.nameEn;
     const farmerName = isUrdu ? crop.farmerUr : crop.farmerEn;
     const location = isUrdu ? crop.locationUr : crop.locationEn;
@@ -226,11 +114,7 @@ export default function MarketplacePage() {
                           farmerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           location.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesCategory = selectedCategory === "all" || 
-      (selectedCategory === "fruits" && ["apricots", "mangoes", "cherries", "apples"].some(f => crop.nameEn.toLowerCase().includes(f))) ||
-      (selectedCategory === "vegetables" && ["tomatoes", "potatoes", "onions"].some(v => crop.nameEn.toLowerCase().includes(v))) ||
-      (selectedCategory === "dairy" && ["ghee", "butter", "milk"].some(d => crop.nameEn.toLowerCase().includes(d)));
-
+    const matchesCategory = selectedCategory === "all" || crop.category === selectedCategory;
     const matchesOrganic = !isOrganicOnly || crop.isOrganic;
     const matchesGrade = selectedGrade === "all" || crop.grade === selectedGrade;
     
@@ -289,7 +173,6 @@ export default function MarketplacePage() {
     });
     setChatMessage("");
 
-    // Mock quick farmer auto-response
     setTimeout(() => {
       const responseText = isUrdu 
         ? "جی بالکل، اس ریٹ پر سودا پکا۔ آرڈر بک کر دیں۔"
@@ -325,10 +208,96 @@ export default function MarketplacePage() {
     setCheckoutStep(2);
   };
 
+  // Call simulation handler
+  const handleCallFarmer = () => {
+    setCallingState("ringing");
+    setTimeout(() => {
+      setCallingState("connected");
+    }, 2000);
+  };
+
+  // Review submission handler
+  const handleReviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewCrop) return;
+
+    // Update locally
+    setCrops(crops.map(c => {
+      if (c.id === reviewCrop.id) {
+        const newReviewsCount = c.reviewsCount + 1;
+        const newRating = parseFloat(((c.rating * c.reviewsCount + userStars) / newReviewsCount).toFixed(1));
+        return {
+          ...c,
+          rating: newRating,
+          reviewsCount: newReviewsCount
+        };
+      }
+      return c;
+    }));
+
+    setReviewSuccess(true);
+    setTimeout(() => {
+      setReviewSuccess(false);
+      setReviewCrop(null);
+      setUserComment("");
+    }, 2000);
+  };
+
+  // AI Advisor question response generator
+  const askAiAdvisor = (questionText: string) => {
+    const userMsg = { sender: "user" as const, text: questionText };
+    setAiHistory(prev => [...prev, userMsg]);
+    setAiInput("");
+
+    setTimeout(() => {
+      let aiResponse = "";
+      const q = questionText.toLowerCase();
+
+      if (q.includes("sell") || q.includes("بیچ")) {
+        aiResponse = isUrdu 
+          ? "کسان بازار پر اپنی فصلیں بیچنا بہت آسان ہے۔ ڈیش بورڈ پر جائیں، 'فصل شامل کریں' پر کلک کریں اور 3 کلک میں اپنی فصل کی معلومات درج کریں۔"
+          : "Selling on Kissan Bazaar is simple! Go to your Farmer Dashboard, click 'Quick List Crop', enter weight & price, and submit in 3 clicks.";
+      } else if (q.includes("price") || q.includes("ریٹ") || q.includes("قیمت")) {
+        aiResponse = isUrdu 
+          ? "آج کے تازہ ترین منڈی ریٹس جاننے کے لیے اوپر مینو میں 'منڈی ریٹس' پر کلک کریں۔ خوبانی اور ٹماٹر کی قیمتوں میں آج اضافہ دیکھا گیا ہے۔"
+          : "To view live regional rates, click 'Mandi Rates' in the main menu. Today, apricot and Swat tomato prices are trending upwards.";
+      } else if (q.includes("subsidy") || q.includes("سبسڈی")) {
+        aiResponse = isUrdu 
+          ? "حکومت کی جانب سے گرین ٹریکٹر اسکیم اور سولر ٹیوب ویل سبسڈی کی درخواستیں شروع ہیں۔ آپ 'منڈی ریٹس' پیج پر جا کر اسکیم کی تفصیلات دیکھ سکتے ہیں۔"
+          : "Applications for the Green Tractor Scheme (50% subsidy) and Solar Tube-well grants are open. See full details on the 'Mandi Rates' page.";
+      } else {
+        aiResponse = isUrdu 
+          ? "میں آپ کی بات سمجھ گیا ہوں۔ براہ کرم کھیتی باڑی، منڈی کے ریٹس، یا کسان بازار کے استعمال سے متعلق سوال پوچھیں۔"
+          : "I understand! Please ask me questions about organic farming, mandi market rates, buyer negotiation, or Kissan Bazaar settings.";
+      }
+
+      setAiHistory(prev => [...prev, { sender: "ai" as const, text: aiResponse }]);
+    }, 1200);
+  };
+
   return (
     <div className={`min-h-screen bg-gradient-to-br from-offwhite to-sage/30 p-4 md:p-8 ${isUrdu ? "rtl-grid text-right" : ""}`} dir={isUrdu ? "rtl" : "ltr"}>
       <div className="max-w-7xl mx-auto">
         
+        {/* Mandi Rate Alerts Ticker */}
+        <div className="relative overflow-hidden w-full bg-primary-dark text-sage-light py-2 px-4 rounded-2xl mb-8 flex items-center gap-3 border border-white/10 shadow-lg">
+          <div className="flex items-center gap-1 text-secondary font-sans font-bold shrink-0 bg-primary/40 px-2 py-0.5 rounded-lg text-xs md:text-sm">
+            <Volume2 size={14} className="animate-pulse" />
+            <span>{isUrdu ? "منڈی ریٹس الرٹ:" : "Mandi Live Ticker:"}</span>
+          </div>
+          <div className="flex-grow overflow-x-hidden font-sans text-xs md:text-sm">
+            <div className="flex gap-8 whitespace-nowrap animate-marquee">
+              {tickerRates.map((rate, idx) => (
+                <span key={idx} className="inline-block">
+                  <span className="font-bold text-white">{rate.name}:</span>{" "}
+                  <span className="text-secondary font-black">Rs. {rate.price}/{rate.unit}</span>{" "}
+                  <span className={`text-[10px] font-bold px-1 rounded ${rate.change.startsWith("+") ? 'text-green-400' : 'text-red-400'}`}>{rate.change}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* HEADER ROW */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
@@ -475,16 +444,6 @@ export default function MarketplacePage() {
               </div>
             </div>
 
-            <div className="absolute top-[50%] left-[60%] z-10 group cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-foreground shadow-lg animate-bounce border-2 border-white">
-                📍
-              </div>
-              <div className="absolute top-12 left-0 bg-white p-3 rounded-2xl shadow border-primary/15 hidden group-hover:block w-48 text-xs">
-                <p className="font-bold text-foreground">{isUrdu ? "آپ یہاں ہیں" : "You are here"}</p>
-                <p className="text-[10px] text-foreground/60">{isUrdu ? "اوکاڑہ ٹاؤن سینٹر" : "Okara Town Center"}</p>
-              </div>
-            </div>
-
             <div className="relative z-10 self-end flex flex-col gap-1 shadow bg-white p-1 rounded-full border border-primary/10">
               <button className="w-8 h-8 rounded-full hover:bg-sage/10 text-primary font-bold">+</button>
               <button className="w-8 h-8 rounded-full hover:bg-sage/10 text-primary font-bold">-</button>
@@ -497,18 +456,25 @@ export default function MarketplacePage() {
             <div className="glass-panel p-6 mb-8 shadow-glass-soft border-white/50 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
               
               {/* Category Filter */}
-              <div className="lg:col-span-3">
+              <div className="lg:col-span-4">
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
                   {isUrdu ? "اقسام" : "Category"}
                 </label>
-                <div className="grid grid-cols-3 gap-1">
-                  {["all", "fruits", "vegetables"].map((cat) => (
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    { id: "all", labelEn: "All", labelUr: "سب" },
+                    { id: "fruits", labelEn: "Fruits", labelUr: "پھل" },
+                    { id: "vegetables", labelEn: "Vegetables", labelUr: "سبزیاں" },
+                    { id: "dairy", labelEn: "Dairy", labelUr: "دودھ/گھی" },
+                    { id: "grains", labelEn: "Grains", labelUr: "اناج" },
+                    { id: "nuts", labelEn: "Nuts", labelUr: "خشک میوہ" }
+                  ].map((cat) => (
                     <button
-                      key={cat}
-                      onClick={() => setSelectedCategory(cat)}
-                      className={`py-2 rounded-xl text-xs font-bold capitalize transition-all min-h-[38px] ${selectedCategory === cat ? 'bg-primary text-white shadow-sm' : 'bg-white hover:bg-sage/10 border border-primary/10 text-primary'}`}
+                      key={cat.id}
+                      onClick={() => setSelectedCategory(cat.id)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all min-h-[38px] ${selectedCategory === cat.id ? 'bg-primary text-white shadow-sm' : 'bg-white hover:bg-sage/10 border border-primary/10 text-primary'}`}
                     >
-                      {cat === "all" ? (isUrdu ? "سب" : "All") : (cat === "fruits" ? (isUrdu ? "پھل" : "Fruits") : (isUrdu ? "سبزیاں" : "Vegetables"))}
+                      {isUrdu ? cat.labelUr : cat.labelEn}
                     </button>
                   ))}
                 </div>
@@ -532,7 +498,7 @@ export default function MarketplacePage() {
               </div>
 
               {/* Radius filter */}
-              <div className="lg:col-span-3">
+              <div className="lg:col-span-2">
                 <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5 flex justify-between">
                   <span>{isUrdu ? "کسان کا فاصلہ" : "Farmer Distance"}</span>
                   <span className="text-primary font-bold">{radius} km</span>
@@ -587,102 +553,286 @@ export default function MarketplacePage() {
                 <p className="text-sm text-foreground/50 mt-1 max-w-sm mx-auto">{isUrdu ? "اپنا فلٹر فاصلہ بڑھائیں یا عمومی نام تلاش کریں۔" : "Try widening your radius or searching for general crops like potato or apricot."}</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCrops.map((crop) => (
-                  <div key={crop.id} className="glass-panel overflow-hidden flex flex-col justify-between group shadow-glass-soft border-white/60 hover:-translate-y-1.5 hover:shadow-lg transition-all duration-300">
-                    
-                    <div className="aspect-[4/3] relative w-full overflow-hidden bg-sage-light">
-                      <Image 
-                        src={crop.image} 
-                        alt={isUrdu ? crop.nameUr : crop.nameEn} 
-                        fill
-                        className="object-cover group-hover:scale-103 transition-transform duration-500"
-                      />
-                      
-                      <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-xs text-xs font-bold text-primary px-2.5 py-1 rounded-full shadow-sm border border-primary/10">
-                        {isUrdu ? `گریڈ ${crop.grade}` : `Grade ${crop.grade}`}
-                      </span>
-                      
-                      {crop.isOrganic && (
-                        <span className="absolute top-3 right-3 bg-secondary text-foreground text-[10px] font-black tracking-wider uppercase px-2.5 py-1 rounded-full shadow-sm">
-                          {isUrdu ? "نامیاتی" : "Organic"}
-                        </span>
-                      )}
+              <div>
+                <span className="block text-xs text-foreground/50 mb-4 font-bold">
+                  {isUrdu ? `کل ${filteredCrops.length} نتائج ملے۔` : `Showing ${filteredCrops.length} agricultural listings.`}
+                </span>
 
-                      <span className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-xs text-xs font-bold text-white px-2 py-0.5 rounded">
-                        {isUrdu ? `دستیاب: ${crop.stock} کلو` : `Available: ${crop.stock}kg`}
-                      </span>
-                    </div>
-
-                    <div className="p-5 flex-grow flex flex-col justify-between">
-                      <div>
-                        <div className="flex justify-between items-center text-xs text-foreground/50 mb-1">
-                          <span className="flex items-center gap-1"><MapPin size={12} /> {isUrdu ? crop.locationUr : crop.locationEn}</span>
-                          <span>{isUrdu ? `کٹائی: ${crop.harvestedUr}` : `Harvested ${crop.harvestedEn}`}</span>
-                        </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredCrops.map((crop) => (
+                    <div key={crop.id} className="glass-panel overflow-hidden flex flex-col justify-between group shadow-glass-soft border-white/60 hover:-translate-y-1.5 hover:shadow-lg transition-all duration-300">
+                      
+                      <div className="aspect-[4/3] relative w-full overflow-hidden bg-sage-light">
+                        <Image 
+                          src={crop.image} 
+                          alt={isUrdu ? crop.nameUr : crop.nameEn} 
+                          fill
+                          className="object-cover group-hover:scale-103 transition-transform duration-500"
+                        />
                         
-                        <h3 className="text-base md:text-lg font-bold text-foreground group-hover:text-primary transition-colors leading-tight mb-2">
-                          {isUrdu ? crop.nameUr : crop.nameEn}
-                        </h3>
-
-                        <div className="flex items-center justify-between bg-primary/5 py-1.5 px-3 rounded-xl border border-primary/5 mb-4">
-                          <span className="text-xs font-semibold text-primary-dark flex items-center gap-1">
-                            👨‍🌾 {isUrdu ? crop.farmerUr : crop.farmerEn}
-                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                        <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-xs text-xs font-bold text-primary px-2.5 py-1 rounded-full shadow-sm border border-primary/10">
+                          {isUrdu ? `گریڈ ${crop.grade}` : `Grade ${crop.grade}`}
+                        </span>
+                        
+                        {crop.isOrganic && (
+                          <span className="absolute top-3 right-3 bg-secondary text-foreground text-[10px] font-black tracking-wider uppercase px-2.5 py-1 rounded-full shadow-sm">
+                            {isUrdu ? "نامیاتی" : "Organic"}
                           </span>
+                        )}
+
+                        <span className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-xs text-xs font-bold text-white px-2 py-0.5 rounded">
+                          {isUrdu ? `دستیاب: ${crop.stock} ${crop.unitUr}` : `Available: ${crop.stock}${crop.unitEn}`}
+                        </span>
+                      </div>
+
+                      <div className="p-5 flex-grow flex flex-col justify-between">
+                        <div>
+                          <div className="flex justify-between items-center text-xs text-foreground/50 mb-1">
+                            <span className="flex items-center gap-1"><MapPin size={12} /> {isUrdu ? crop.locationUr : crop.locationEn}</span>
+                            <span>{isUrdu ? `کٹائی: ${crop.harvestedUr}` : `Harvested ${crop.harvestedEn}`}</span>
+                          </div>
                           
+                          <h3 className="text-base md:text-lg font-bold text-foreground group-hover:text-primary transition-colors leading-tight mb-1">
+                            {isUrdu ? crop.nameUr : crop.nameEn}
+                          </h3>
+
+                          {/* Rating & Write Review button */}
+                          <div className="flex items-center gap-1.5 mb-3">
+                            <div className="flex text-amber-500">
+                              <Star size={14} className="fill-current" />
+                            </div>
+                            <span className="text-xs font-bold text-foreground/80">{crop.rating}</span>
+                            <span className="text-[10px] text-foreground/50">({crop.reviewsCount} {isUrdu ? "ریویوز" : "reviews"})</span>
+                            <button 
+                              onClick={() => setReviewCrop(crop)}
+                              className="text-[10px] text-primary font-bold hover:underline ml-2"
+                            >
+                              {isUrdu ? "ریویو لکھیں" : "Write Review"}
+                            </button>
+                          </div>
+
+                          <div className="flex items-center justify-between bg-primary/5 py-1.5 px-3 rounded-xl border border-primary/5 mb-4">
+                            <span className="text-xs font-semibold text-primary-dark flex items-center gap-1">
+                              👨‍🌾 {isUrdu ? crop.farmerUr : crop.farmerEn}
+                              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                            </span>
+                            
+                            <div className="flex gap-2">
+                              <button 
+                                onClick={() => setActiveChatFarmer(isUrdu ? crop.farmerUr : crop.farmerEn)}
+                                className="text-[10px] font-bold text-primary hover:underline flex items-center gap-0.5"
+                              >
+                                <MessageSquare size={10} /> {isUrdu ? "چیٹ" : "Chat"}
+                              </button>
+                              <button 
+                                onClick={() => setContactFarmer(crop)}
+                                className="text-[10px] font-bold text-primary hover:underline flex items-center gap-0.5"
+                              >
+                                <Phone size={10} /> {isUrdu ? "کال کریں" : "Call"}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="pt-3 border-t border-sage/20 flex flex-col gap-2">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-wider block">{isUrdu ? "براہ راست ریٹ" : "Direct Price"}</span>
+                              <span className="text-lg font-black text-primary">Rs. {crop.price}<span className="text-xs text-foreground/60 font-medium">/{isUrdu ? crop.unitUr : crop.unitEn}</span></span>
+                            </div>
+                            
+                            <div className="flex gap-1">
+                              <button 
+                                onClick={() => setSelectedBulkCrop(crop)}
+                                className="p-2 border border-primary/20 hover:bg-primary/5 rounded-full text-primary min-h-[48px] min-w-[48px] flex items-center justify-center"
+                                title={isUrdu ? "ہول سیل ریٹ درخواست" : "Request Bulk Quote"}
+                              >
+                                <FileSpreadsheet size={18} />
+                              </button>
+                              <button 
+                                onClick={() => toggleWishlist(crop.id)}
+                                className="p-2 border border-primary/20 hover:bg-red-50 rounded-full text-red-500 min-h-[48px] min-w-[48px] flex items-center justify-center"
+                                title="Add to Wishlist"
+                              >
+                                <Heart size={18} className={wishlist.includes(crop.id) ? "fill-red-500 text-red-500" : ""} />
+                              </button>
+                            </div>
+                          </div>
+
                           <button 
-                            onClick={() => setActiveChatFarmer(isUrdu ? crop.farmerUr : crop.farmerEn)}
-                            className="text-[10px] font-bold text-primary hover:underline flex items-center gap-0.5"
+                            onClick={() => addToCart(crop)}
+                            className="w-full bg-primary hover:bg-primary-dark text-white font-sans text-xs font-bold py-2.5 rounded-full transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-primary/10 min-h-[48px]"
                           >
-                            <MessageSquare size={10} /> {isUrdu ? "سودا کریں" : "Chat Direct"}
+                            <ShoppingBag size={14} />
+                            <span>{isUrdu ? "ٹوکری میں ڈالیں" : "Add to Basket"}</span>
                           </button>
                         </div>
                       </div>
 
-                      <div className="pt-3 border-t border-sage/20 flex flex-col gap-2">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-wider block">{isUrdu ? "براہ راست ریٹ" : "Direct Price"}</span>
-                            <span className="text-lg font-black text-primary">Rs. {crop.price}<span className="text-xs text-foreground/60 font-medium">/{isUrdu ? crop.unitUr : crop.unitEn}</span></span>
-                          </div>
-                          
-                          <div className="flex gap-1">
-                            <button 
-                              onClick={() => setSelectedBulkCrop(crop)}
-                              className="p-2 border border-primary/20 hover:bg-primary/5 rounded-full text-primary min-h-[48px] min-w-[48px] flex items-center justify-center"
-                              title={isUrdu ? "ہول سیل ریٹ درخواست" : "Request Bulk Quote"}
-                            >
-                              <FileSpreadsheet size={18} />
-                            </button>
-                            <button 
-                              onClick={() => toggleWishlist(crop.id)}
-                              className="p-2 border border-primary/20 hover:bg-red-50 rounded-full text-red-500 min-h-[48px] min-w-[48px] flex items-center justify-center"
-                              title="Add to Wishlist"
-                            >
-                              <Heart size={18} className={wishlist.includes(crop.id) ? "fill-red-500 text-red-500" : ""} />
-                            </button>
-                          </div>
-                        </div>
-
-                        <button 
-                          onClick={() => addToCart(crop)}
-                          className="w-full bg-primary hover:bg-primary-dark text-white font-sans text-xs font-bold py-2.5 rounded-full transition-colors flex items-center justify-center gap-1.5 shadow-md shadow-primary/10 min-h-[48px]"
-                        >
-                          <ShoppingBag size={14} />
-                          <span>{isUrdu ? "ٹوکری میں ڈالیں" : "Add to Basket"}</span>
-                        </button>
-                      </div>
                     </div>
-
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
           </>
         )}
 
-        {/* B2B BULK QUOTE REQUEST MODAL */}
+        {/* EXTRA MODULE: CALL / WHATSAPP SANDBOX MODAL */}
+        {contactFarmer && (
+          <div className="fixed inset-0 bg-black/45 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+            <div className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl border border-primary/10 animate-fade-in relative text-center">
+              <button 
+                onClick={() => {
+                  setContactFarmer(null);
+                  setCallingState("idle");
+                }}
+                className="absolute top-4 right-4 p-2 hover:bg-sage/10 rounded-full text-foreground/40"
+              >
+                <X size={18} />
+              </button>
+
+              {callingState === "idle" ? (
+                <div className="space-y-4">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary mx-auto mb-2 text-2xl">
+                    📞
+                  </div>
+                  <h3 className="text-lg font-heading font-black text-primary-dark">
+                    {isUrdu ? `کسان سے رابطہ: ${contactFarmer.farmerUr}` : `Contact ${contactFarmer.farmerEn}`}
+                  </h3>
+                  <p className="text-xs text-foreground/60">
+                    {isUrdu ? "موبائل نمبر: +92 300 1234567" : "Phone: +92 300 1234567"}
+                  </p>
+
+                  <div className="space-y-2 pt-4">
+                    <button 
+                      onClick={handleCallFarmer}
+                      className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 rounded-full flex items-center justify-center gap-2 min-h-[48px]"
+                    >
+                      <Phone size={16} />
+                      <span>{isUrdu ? "براہ راست کال ملائیں" : "Call Direct Line"}</span>
+                    </button>
+                    <a 
+                      href="https://wa.me/923001234567"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full border-2 border-green-500 hover:bg-green-50 text-green-600 font-bold py-2.5 rounded-full flex items-center justify-center gap-2 min-h-[48px]"
+                    >
+                      <MessageCircle size={16} />
+                      <span>{isUrdu ? "واٹس ایپ چیٹ کھولیں" : "Chat on WhatsApp"}</span>
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-6 py-6 animate-pulse">
+                  <div className="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto text-3xl shadow-lg shadow-green-500/25">
+                    📞
+                  </div>
+                  
+                  {callingState === "ringing" ? (
+                    <div>
+                      <h4 className="text-base font-bold text-foreground">{isUrdu ? "رابطہ ملایا جا رہا ہے..." : "Calling..."}</h4>
+                      <p className="text-xs text-foreground/50 mt-1">{isUrdu ? `کسان ${contactFarmer.farmerUr} کو گھنٹی جا رہی ہے...` : `Ringing ${contactFarmer.farmerEn}...`}</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="text-base font-bold text-green-600">{isUrdu ? "کال منسلک ہو گئی" : "Call Connected"}</h4>
+                        <p className="text-xs text-foreground/60 mt-1">{isUrdu ? "لائیو آڈیو سگنل فعال ہے" : "Audio link simulated successfully!"}</p>
+                      </div>
+                      <button 
+                        onClick={() => setCallingState("idle")}
+                        className="bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-2 px-6 rounded-full"
+                      >
+                        {isUrdu ? "کال بند کریں" : "End Call"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* EXTRA MODULE: REVIEW & FEEDBACK MODAL */}
+        {reviewCrop && (
+          <div className="fixed inset-0 bg-black/45 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+            <div className="w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl border border-primary/10 animate-fade-in relative">
+              <button 
+                onClick={() => setReviewCrop(null)}
+                className="absolute top-4 right-4 p-2 hover:bg-sage/10 rounded-full text-foreground/40"
+              >
+                <X size={18} />
+              </button>
+
+              {reviewSuccess ? (
+                <div className="text-center py-8">
+                  <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 mx-auto mb-4 border-2 border-green-500">
+                    <Check size={24} className="stroke-[3]" />
+                  </div>
+                  <h3 className="text-lg font-bold text-primary-dark">{isUrdu ? "ریویو جمع ہو گیا!" : "Feedback Submitted!"}</h3>
+                  <p className="text-xs text-foreground/60 mt-1">{isUrdu ? "آپ کا فیڈ بیک کسان کی پروفائل ریٹنگ کو بہتر بنائے گا۔" : "Thank you for supporting verified local farmers."}</p>
+                </div>
+              ) : (
+                <form onSubmit={handleReviewSubmit} className="space-y-4">
+                  <div>
+                    <span className="inline-block px-2.5 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
+                      {isUrdu ? "کوالٹی فیڈ بیک" : "Quality Review"}
+                    </span>
+                    <h3 className="text-lg font-heading font-black text-primary-dark mt-2">
+                      {isUrdu ? `ریویو لکھیں: ${reviewCrop.nameUr}` : `Write Review for ${reviewCrop.nameEn}`}
+                    </h3>
+                  </div>
+
+                  {/* Stars select */}
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-2">
+                      {isUrdu ? "اپنے اسٹارز منتخب کریں:" : "Choose Star Rating:"}
+                    </label>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          type="button"
+                          key={star}
+                          onClick={() => setUserStars(star)}
+                          className="p-1 hover:scale-110 transition-transform"
+                        >
+                          <Star 
+                            size={28} 
+                            className={star <= userStars ? "fill-amber-500 text-amber-500" : "text-foreground/30"} 
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
+                      {isUrdu ? "تبصرہ / رائے" : "Your Comment"}
+                    </label>
+                    <textarea 
+                      placeholder={isUrdu ? "معیار اور قیمت سے متعلق اپنی رائے لکھیں..." : "Write about produce freshness, size, or overall shipping experience..."}
+                      value={userComment}
+                      onChange={(e) => setUserComment(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-primary/10 bg-white focus:outline-none focus:ring-2 focus:ring-primary text-xs font-sans min-h-[48px]"
+                      rows={3}
+                      required
+                    />
+                  </div>
+
+                  <button 
+                    type="submit"
+                    className="w-full bg-primary hover:bg-primary-dark text-white font-sans font-bold py-3 rounded-full transition-colors flex items-center justify-center gap-1.5 shadow-md min-h-[48px]"
+                  >
+                    <Check size={16} />
+                    <span>{isUrdu ? "ریویو جمع کریں" : "Submit Feedback"}</span>
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* EXTRA MODULE: B2B BULK QUOTE REQUEST MODAL */}
         {selectedBulkCrop && (
           <div className="fixed inset-0 bg-black/45 backdrop-blur-xs flex items-center justify-center z-50 p-4">
             <div className="w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl border border-primary/10 animate-fade-in relative">
@@ -775,7 +925,7 @@ export default function MarketplacePage() {
                   </span>
                 </div>
               </div>
-              <button onClick={() => setActiveChatFarmer(null)} className="p-1 hover:bg-sage/10 rounded-full text-foreground/40 min-h-[48px] min-w-[48px] flex items-center justify-center">
+              <button onClick={() => setActiveChatFarmer(null)} className="p-1 hover:bg-sage/10 rounded-full text-foreground/40 min-h-[48px] min-w-[48px] flex items-center justify-center animate-pulse">
                 <X size={16} />
               </button>
             </div>
@@ -997,6 +1147,84 @@ export default function MarketplacePage() {
             </div>
           </div>
         )}
+
+        {/* EXTRA MODULE: KISSAN DOST AI FLOATING ADVISOR CHATBOT */}
+        <div className="fixed bottom-6 left-6 z-50">
+          <button 
+            onClick={() => setShowAiAdvisor(!showAiAdvisor)}
+            className="w-14 h-14 bg-secondary hover:bg-secondary-dark text-foreground rounded-full flex items-center justify-center shadow-2xl border-2 border-primary/20 hover:scale-105 transition-all relative group"
+            title="Kissan Dost AI Advisor"
+          >
+            <Sparkles size={24} className="animate-spin-slow text-primary" />
+            <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-primary-dark text-white text-[10px] font-bold py-1 px-3 rounded-xl whitespace-nowrap shadow-md opacity-0 group-hover:opacity-100 transition-opacity">
+              {isUrdu ? "کسان دوست AI" : "Kissan Dost AI"}
+            </span>
+          </button>
+
+          {showAiAdvisor && (
+            <div className="absolute bottom-16 left-0 w-80 md:w-96 bg-white rounded-3xl p-4 shadow-2xl border border-primary/10 animate-slide-up flex flex-col h-[420px]">
+              <div className="flex justify-between items-center pb-2 border-b border-sage/20">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles size={16} className="text-secondary-dark animate-bounce" />
+                  <h4 className="text-xs font-black text-primary-dark">{isUrdu ? "کسان دوست اے آئی ایڈوائزر" : "Kissan Dost AI Advisor"}</h4>
+                </div>
+                <button onClick={() => setShowAiAdvisor(false)} className="p-1 hover:bg-sage/10 rounded-full text-foreground/40">
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Chat history */}
+              <div className="flex-grow overflow-y-auto py-3 space-y-2.5">
+                {aiHistory.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.sender === "user" ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`p-3 rounded-2xl text-xs max-w-[85%] ${msg.sender === "user" ? 'bg-primary text-white rounded-tr-none' : 'bg-sage/20 text-primary-dark rounded-tl-none border border-primary/5'}`}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Preset questions for quick interaction */}
+              <div className="flex flex-wrap gap-1 mb-2">
+                {[
+                  { en: "How to sell produce?", ur: "فصل کیسے بیچیں؟" },
+                  { en: "Get today's rates", ur: "آج کے ریٹس کیا ہیں؟" },
+                  { en: "Agri subsidies details", ur: "سرکاری سبسڈی کیا ہے؟" }
+                ].map((preset, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => askAiAdvisor(isUrdu ? preset.ur : preset.en)}
+                    className="text-[9px] bg-sage/10 hover:bg-sage/20 text-primary-dark font-bold px-2 py-1 rounded-lg border border-primary/5 transition-colors"
+                  >
+                    {isUrdu ? preset.ur : preset.en}
+                  </button>
+                ))}
+              </div>
+
+              {/* AI Message Form */}
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!aiInput.trim()) return;
+                  askAiAdvisor(aiInput);
+                }} 
+                className="flex gap-2"
+              >
+                <input 
+                  type="text"
+                  placeholder={isUrdu ? "سوال پوچھیں (اردو یا English)..." : "Ask Kissan Dost AI advisory questions..."}
+                  value={aiInput}
+                  onChange={(e) => setAiInput(e.target.value)}
+                  className="flex-grow px-3 py-2 rounded-xl border border-primary/10 text-xs focus:outline-none focus:ring-1 focus:ring-primary bg-white min-h-[48px]"
+                />
+                <button type="submit" className="p-3 bg-primary hover:bg-primary-dark text-white rounded-xl transition-colors flex items-center justify-center min-h-[48px] min-w-[48px]">
+                  <Send size={14} />
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
 
       </div>
     </div>
