@@ -15,8 +15,10 @@ import {
   Upload,
   Coins
 } from "lucide-react";
+import { useLanguageStore } from "@/stores/useLanguageStore";
 
 export default function OnboardingPage() {
+  const { isUrdu } = useLanguageStore();
   const [step, setStep] = useState(1);
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
@@ -38,12 +40,11 @@ export default function OnboardingPage() {
   const handleSendOtp = (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone || phone.length < 10) {
-      setOtpError("Please enter a valid phone number.");
+      setOtpError(isUrdu ? "براہ کرم درست فون نمبر درج کریں۔" : "Please enter a valid phone number.");
       return;
     }
     setOtpError("");
     setOtpSent(true);
-    // Mimic sending OTP
   };
 
   const handleVerifyOtp = (e: React.FormEvent) => {
@@ -51,21 +52,21 @@ export default function OnboardingPage() {
     if (otp === "1234" || otp.length === 4) {
       setStep(2);
     } else {
-      setOtpError("Incorrect code. Try '1234' for testing.");
+      setOtpError(isUrdu ? "غلط کوڈ۔ ٹیسٹ کے لیے '1234' درج کریں۔" : "Incorrect code. Try '1234' for testing.");
     }
   };
 
   const handleKYCSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!kycData.fullName || !kycData.farmName || !kycData.cnic || !kycData.payoutNumber) {
-      setFormError("Please fill out all required fields.");
+      setFormError(isUrdu ? "براہ کرم تمام مطلوبہ فیلڈز پُر کریں۔" : "Please fill out all required fields.");
       return;
     }
     
     // Validate CNIC format 12345-1234567-1
     const cnicRegex = /^[0-9]{5}-[0-9]{7}-[0-9]{1}$/;
     if (!cnicRegex.test(kycData.cnic)) {
-      setFormError("CNIC format must be 12345-1234567-1");
+      setFormError(isUrdu ? "شناختی کارڈ فارمیٹ 12345-1234567-1 ہونا لازمی ہے۔" : "CNIC format must be 12345-1234567-1");
       return;
     }
 
@@ -90,7 +91,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] py-10 px-4 flex items-center justify-center bg-gradient-to-br from-offwhite to-sage/40">
+    <div className={`min-h-[calc(100vh-80px)] py-10 px-4 flex items-center justify-center bg-gradient-to-br from-offwhite to-sage/40 ${isUrdu ? "rtl-grid text-right" : ""}`} dir={isUrdu ? "rtl" : "ltr"}>
       <div className="w-full max-w-lg glass-panel p-6 md:p-10 shadow-glass border-white/60">
         
         {/* STEP HEADER */}
@@ -104,27 +105,25 @@ export default function OnboardingPage() {
             ))}
           </div>
           <span className="text-xs font-bold text-accent uppercase tracking-wider">
-            Step {step} of 3
+            {isUrdu ? `مرحلہ ${step} از 3` : `Step ${step} of 3`}
           </span>
         </div>
 
-        {/* ==========================================
-            STEP 1: PHONE VERIFICATION (OTP)
-            ========================================== */}
+        {/* STEP 1: PHONE VERIFICATION (OTP) */}
         {step === 1 && (
           <div>
             <h1 className="text-2xl md:text-3xl font-heading font-extrabold text-primary-dark mb-2">
-              Farmer Login & Auth
+              {isUrdu ? "کسان لاگ ان اور رجسٹریشن" : "Farmer Login & Auth"}
             </h1>
             <p className="text-sm text-foreground/70 mb-6 leading-relaxed">
-              Verify your mobile number to set up your Kissan Bazaar farm listing profile.
+              {isUrdu ? "اپنا موبائل نمبر درج کریں تاکہ کسان بازار میں آپ کی فصلوں کی لسٹنگ شروع کی جا سکے۔" : "Verify your mobile number to set up your Kissan Bazaar farm listing profile."}
             </p>
 
             {!otpSent ? (
               <form onSubmit={handleSendOtp} className="space-y-4">
                 <div>
                   <label htmlFor="phone" className="block text-xs font-bold uppercase tracking-wider text-foreground/75 mb-2">
-                    Mobile Phone Number
+                    {isUrdu ? "موبائل فون نمبر" : "Mobile Phone Number"}
                   </label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground/50 text-base font-semibold font-sans">
@@ -147,8 +146,8 @@ export default function OnboardingPage() {
                   type="submit"
                   className="w-full bg-primary hover:bg-primary-dark text-white font-sans font-bold py-3.5 px-6 rounded-full transition-colors flex items-center justify-center gap-2 mt-6 shadow-md shadow-primary/10 min-h-[48px]"
                 >
-                  <span>Send OTP Code</span>
-                  <ArrowRight size={18} />
+                  <span>{isUrdu ? "او ٹی پی کوڈ بھیجیں" : "Send OTP Code"}</span>
+                  <ArrowRight size={18} className={isUrdu ? "rotate-180" : ""} />
                 </button>
               </form>
             ) : (
@@ -156,14 +155,14 @@ export default function OnboardingPage() {
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <label htmlFor="otp" className="block text-xs font-bold uppercase tracking-wider text-foreground/75">
-                      Enter 4-Digit Verification Code
+                      {isUrdu ? "4 ہندسوں کا ویری فکیشن کوڈ درج کریں" : "Enter 4-Digit Verification Code"}
                     </label>
                     <button 
                       type="button" 
                       onClick={() => setOtpSent(false)}
                       className="text-xs text-primary hover:underline font-bold flex items-center gap-0.5"
                     >
-                      <ArrowLeft size={12} /> Change Phone
+                      <ArrowLeft size={12} className={isUrdu ? "rotate-180" : ""} /> {isUrdu ? "نمبر تبدیل کریں" : "Change Phone"}
                     </button>
                   </div>
                   <input 
@@ -186,7 +185,7 @@ export default function OnboardingPage() {
                   type="submit"
                   className="w-full bg-secondary hover:bg-secondary-dark text-foreground font-sans font-bold py-3.5 px-6 rounded-full transition-colors flex items-center justify-center gap-2 mt-6 shadow-md shadow-secondary/10 min-h-[48px]"
                 >
-                  <span>Verify & Proceed</span>
+                  <span>{isUrdu ? "تصدیق کریں اور آگے بڑھیں" : "Verify & Proceed"}</span>
                   <ShieldCheck size={18} />
                 </button>
               </form>
@@ -194,25 +193,22 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* ==========================================
-            STEP 2: KYC AND PAYOUT SETUP
-            ========================================== */}
+        {/* STEP 2: KYC AND PAYOUT SETUP */}
         {step === 2 && (
           <div>
             <h1 className="text-2xl font-heading font-extrabold text-primary-dark mb-1">
-              Farmer KYC Verification
+              {isUrdu ? "کسان کی کے وائی سی تصدیق" : "Farmer KYC Verification"}
             </h1>
             <p className="text-xs text-foreground/70 mb-6 leading-relaxed">
-              Required for government compliance, verified farmer badge, and payout processing.
+              {isUrdu ? "سرکاری تعمیل، تصدیق شدہ بیج اور ادائیگی کے حصول کے لیے لازمی معلومات۔" : "Required for government compliance, verified farmer badge, and payout processing."}
             </p>
 
             <form onSubmit={handleKYCSubmit} className="space-y-4">
               
-              {/* Name & Farm Name */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
-                    Farmer Full Name
+                    {isUrdu ? "کسان کا پورا نام" : "Farmer Full Name"}
                   </label>
                   <input 
                     type="text"
@@ -225,7 +221,7 @@ export default function OnboardingPage() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
-                    Farm Name / فارم کا نام
+                    {isUrdu ? "فارم کا نام" : "Farm Name / فارم کا نام"}
                   </label>
                   <input 
                     type="text"
@@ -238,10 +234,9 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              {/* CNIC Number */}
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
-                  CNIC Number (شناختی کارڈ نمبر)
+                  {isUrdu ? "شناختی کارڈ نمبر" : "CNIC Number (شناختی کارڈ نمبر)"}
                 </label>
                 <input 
                   type="text"
@@ -253,15 +248,14 @@ export default function OnboardingPage() {
                 />
               </div>
 
-              {/* Farm GPS pin Simulation */}
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
-                  Farm GPS Location Pin
+                  {isUrdu ? "فارم کی جی پی ایس لوکیشن" : "Farm GPS Location Pin"}
                 </label>
                 <div className="flex gap-2 p-3 bg-sage/30 rounded-2xl border border-primary/5 items-center">
                   <MapPin size={22} className="text-primary shrink-0" />
                   <div className="flex-grow">
-                    <span className="text-xs font-bold text-foreground/80 block">Current Location Saved</span>
+                    <span className="text-xs font-bold text-foreground/80 block">{isUrdu ? "موجودہ لوکیشن محفوظ ہو گئی" : "Current Location Saved"}</span>
                     <span className="text-[10px] text-foreground/50">Lat: {kycData.gpsLat}, Lng: {kycData.gpsLng} (Gilgit, Pakistan)</span>
                   </div>
                   <button 
@@ -269,15 +263,14 @@ export default function OnboardingPage() {
                     onClick={() => setKycData({...kycData, gpsLat: "35.9208", gpsLng: "74.3089"})}
                     className="text-xs text-primary font-bold hover:underline min-h-[48px] px-2"
                   >
-                    Refresh GPS
+                    {isUrdu ? "لوکیشن دوبارہ حاصل کریں" : "Refresh GPS"}
                   </button>
                 </div>
               </div>
 
-              {/* Payout Information */}
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-2">
-                  Preferred Payout Method
+                  {isUrdu ? "ادائیگی کا ترجیحی طریقہ" : "Preferred Payout Method"}
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {["easypaisa", "jazzcash", "bank"].map((method) => (
@@ -287,18 +280,17 @@ export default function OnboardingPage() {
                       onClick={() => setKycData({...kycData, payoutType: method})}
                       className={`py-3 rounded-xl border text-xs font-bold capitalize transition-all min-h-[48px] ${kycData.payoutType === method ? 'bg-primary text-white border-primary shadow-sm' : 'bg-white hover:bg-sage/10 border-primary/10 text-primary-dark'}`}
                     >
-                      {method}
+                      {method === "bank" ? (isUrdu ? "بینک اکاؤنٹ" : "Bank") : method}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Payout Details */}
               {kycData.payoutType === "bank" ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                   <div>
                     <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
-                      Bank Name
+                      {isUrdu ? "بینک کا نام" : "Bank Name"}
                     </label>
                     <input 
                       type="text"
@@ -311,7 +303,7 @@ export default function OnboardingPage() {
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
-                      IBAN Number
+                      {isUrdu ? "آئی بی اے این نمبر" : "IBAN Number"}
                     </label>
                     <input 
                       type="text"
@@ -326,7 +318,9 @@ export default function OnboardingPage() {
               ) : (
                 <div className="pt-2">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
-                    {kycData.payoutType === "easypaisa" ? "Easypaisa Account Number" : "JazzCash Account Number"}
+                    {kycData.payoutType === "easypaisa" 
+                      ? (isUrdu ? "ایزی پیسہ اکاؤنٹ نمبر" : "Easypaisa Account Number")
+                      : (isUrdu ? "جیز کیش اکاؤنٹ نمبر" : "JazzCash Account Number")}
                   </label>
                   <input 
                     type="tel"
@@ -345,16 +339,14 @@ export default function OnboardingPage() {
                 type="submit"
                 className="w-full bg-primary hover:bg-primary-dark text-white font-sans font-bold py-3.5 px-6 rounded-full transition-colors flex items-center justify-center gap-2 mt-6 shadow-md shadow-primary/10 min-h-[48px]"
               >
-                <span>Submit KYC Data</span>
+                <span>{isUrdu ? "کے وائی سی معلومات جمع کروائیں" : "Submit KYC Data"}</span>
                 <Check size={18} />
               </button>
             </form>
           </div>
         )}
 
-        {/* ==========================================
-            STEP 3: SUCCESS & VERIFICATION STATUS
-            ========================================== */}
+        {/* STEP 3: SUCCESS & VERIFICATION STATUS */}
         {step === 3 && (
           <div className="text-center py-6">
             <div className="w-20 h-20 rounded-full bg-green-500/10 border-4 border-green-500 flex items-center justify-center mx-auto text-green-600 mb-6 shadow-lg shadow-green-500/15 animate-bounce">
@@ -363,14 +355,16 @@ export default function OnboardingPage() {
 
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/15 text-secondary-dark text-xs font-bold mb-4">
               <Sparkles size={12} className="animate-spin-slow" />
-              Verified Farmer Status Granted
+              {isUrdu ? "تصدیق شدہ کسان کا درجہ مل گیا" : "Verified Farmer Status Granted"}
             </span>
 
             <h1 className="text-3xl font-heading font-black text-primary-dark mb-3">
-              Congratulations!
+              {isUrdu ? "مبارک ہو!" : "Congratulations!"}
             </h1>
             <p className="text-sm text-foreground/70 max-w-sm mx-auto mb-8 leading-relaxed">
-              Your farm, <span className="font-bold text-primary">{kycData.farmName}</span>, has been verified. You can now post crops, track sales analytics, and skip the middleman!
+              {isUrdu 
+                ? `آپ کا فارم، ${kycData.farmName}، کامیابی سے تصدیق کر دیا گیا ہے۔ اب آپ براہ راست فصلیں فروخت کر سکتے ہیں۔`
+                : `Your farm, ${kycData.farmName}, has been verified. You can now post crops, track sales analytics, and skip the middleman!`}
             </p>
 
             <div className="space-y-3">
@@ -378,14 +372,14 @@ export default function OnboardingPage() {
                 href="/dashboard"
                 className="w-full bg-primary hover:bg-primary-dark text-white font-sans font-bold py-3.5 px-6 rounded-full transition-all flex items-center justify-center gap-2 shadow-md shadow-primary/10 min-h-[48px]"
               >
-                <span>Go to Farmer Dashboard</span>
-                <ArrowRight size={18} />
+                <span>{isUrdu ? "کسان ڈیش بورڈ پر جائیں" : "Go to Farmer Dashboard"}</span>
+                <ArrowRight size={18} className={isUrdu ? "rotate-180" : ""} />
               </Link>
               <Link 
                 href="/"
                 className="w-full border-2 border-primary/20 hover:bg-primary/5 text-primary font-sans font-bold py-3 px-6 rounded-full transition-all flex items-center justify-center min-h-[48px]"
               >
-                Return Home
+                {isUrdu ? "ہوم پیج پر واپس جائیں" : "Return Home"}
               </Link>
             </div>
           </div>

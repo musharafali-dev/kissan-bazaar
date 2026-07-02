@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useLanguageStore } from "@/stores/useLanguageStore";
 import { 
   Search, 
   MapPin, 
@@ -37,7 +38,7 @@ interface MandiRate {
 }
 
 export default function MandiRatesPage() {
-  const [isUrdu, setIsUrdu] = useState(false);
+  const { isUrdu, toggleLanguage } = useLanguageStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -146,7 +147,7 @@ export default function MandiRatesPage() {
           </div>
           
           <button 
-            onClick={() => setIsUrdu(!isUrdu)}
+            onClick={toggleLanguage}
             className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold hover:bg-primary/20 transition-all border border-primary/10 min-h-[48px]"
           >
             <span>{isUrdu ? "Read in English" : "اردو میں پڑھیں"}</span>

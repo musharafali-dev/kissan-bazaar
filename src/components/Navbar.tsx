@@ -3,11 +3,12 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Sprout, Languages, Menu, X, User, ShoppingBag, LayoutDashboard } from "lucide-react";
+import { useLanguageStore } from "@/stores/useLanguageStore";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isUrdu, setIsUrdu] = useState(false);
   const [isOffline, setIsOffline] = useState(false);
+  const { isUrdu, toggleLanguage } = useLanguageStore();
 
   useEffect(() => {
     // Check connection status for PWA support
@@ -23,11 +24,6 @@ export default function Navbar() {
       };
     }
   }, []);
-
-  const toggleLanguage = () => {
-    setIsUrdu(!isUrdu);
-    // In a real application, this would trigger an i18n hook
-  };
 
   return (
     <>
