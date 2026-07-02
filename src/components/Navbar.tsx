@@ -85,6 +85,15 @@ export default function Navbar() {
               {isUrdu ? "کسان لاگ ان" : "Join as Farmer"}
             </Link>
 
+            {/* User Profile / Login */}
+            <Link 
+              href="/auth"
+              className="p-2 hover:bg-sage/40 rounded-full transition-colors text-primary"
+              aria-label="Profile Login"
+            >
+              <User size={20} />
+            </Link>
+
             {/* Buyer Profile / Cart */}
             <button className="p-2 hover:bg-sage/40 rounded-full transition-colors relative" aria-label="Cart">
               <ShoppingBag size={20} className="text-primary" />
@@ -94,6 +103,14 @@ export default function Navbar() {
 
           {/* Mobile menu toggle & controls */}
           <div className="flex md:hidden items-center gap-3">
+            <Link 
+              href="/auth"
+              className="p-2 hover:bg-sage/40 rounded-full transition-colors text-primary border border-primary/10"
+              aria-label="Profile Login"
+            >
+              <User size={18} />
+            </Link>
+
             <button 
               onClick={toggleLanguage}
               className="p-2 rounded-full hover:bg-sage/40 text-primary border border-primary/10 transition-colors"
