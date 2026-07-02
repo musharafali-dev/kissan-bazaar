@@ -173,7 +173,7 @@ export default function OnboardingPage() {
                     maxLength={4}
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ""))}
-                    className="w-full text-center tracking-[1rem] font-black text-2xl py-3.5 rounded-xl border border-primary/10 bg-white/70 focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white text-base font-sans min-h-[48px]"
+                    className="w-full text-center tracking-[1rem] font-black text-2xl py-3.5 rounded-xl border border-primary/10 bg-white/70 focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white font-sans min-h-[48px]"
                     required
                   />
                   {otpError && <p className="text-red-500 text-xs mt-1 font-semibold">{otpError}</p>}

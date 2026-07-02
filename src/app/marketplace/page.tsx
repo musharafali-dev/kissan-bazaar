@@ -509,7 +509,7 @@ export default function MarketplacePage() {
 
               {/* Radius filter */}
               <div className="lg:col-span-3">
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5 flex justify-between">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5 flex justify-between">
                   <span>Farmer Distance</span>
                   <span className="text-primary font-bold">{radius} km</span>
                 </label>
