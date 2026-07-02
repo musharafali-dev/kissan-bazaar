@@ -57,7 +57,7 @@ export default function Navbar() {
             <Link href="/" className="hover:text-primary transition-colors py-1 border-b-2 border-transparent hover:border-primary">
               {isUrdu ? "ہوم" : "Home"}
             </Link>
-            <Link href="#" className="hover:text-primary transition-colors py-1 border-b-2 border-transparent hover:border-primary">
+            <Link href="/marketplace" className="hover:text-primary transition-colors py-1 border-b-2 border-transparent hover:border-primary">
               {isUrdu ? "مارکیٹ پلیس" : "Marketplace"}
             </Link>
             <Link href="/dashboard" className="hover:text-primary transition-colors py-1 border-b-2 border-transparent hover:border-primary flex items-center gap-1.5">
@@ -128,7 +128,7 @@ export default function Navbar() {
                 {isUrdu ? "ہوم" : "Home"}
               </Link>
               <Link 
-                href="#" 
+                href="/marketplace" 
                 onClick={() => setIsOpen(false)}
                 className="hover:text-primary transition-colors py-2 border-b border-sage/30"
               >
