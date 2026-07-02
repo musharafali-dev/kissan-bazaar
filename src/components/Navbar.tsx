@@ -64,7 +64,7 @@ export default function Navbar() {
               <LayoutDashboard size={16} />
               {isUrdu ? "ڈیش بورڈ" : "Dashboard"}
             </Link>
-            <Link href="#" className="hover:text-primary transition-colors py-1 border-b-2 border-transparent hover:border-primary">
+            <Link href="/mandi-rates" className="hover:text-primary transition-colors py-1 border-b-2 border-transparent hover:border-primary">
               {isUrdu ? "منڈی ریٹس" : "Mandi Rates"}
             </Link>
           </nav>
@@ -143,7 +143,7 @@ export default function Navbar() {
                 {isUrdu ? "ڈیش بورڈ" : "Dashboard"}
               </Link>
               <Link 
-                href="#" 
+                href="/mandi-rates" 
                 onClick={() => setIsOpen(false)}
                 className="hover:text-primary transition-colors py-2 border-b border-sage/30"
               >
