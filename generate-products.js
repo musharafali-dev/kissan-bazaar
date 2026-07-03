@@ -286,8 +286,8 @@ const locations = [
 
 const products = [];
 
-// Generate exactly 150 products
-for (let i = 1; i <= 150; i++) {
+// Generate exactly 30 products
+for (let i = 1; i <= 30; i++) {
   const category = categories[i % categories.length];
   const templates = cropTemplates[category];
   const template = templates[i % templates.length];
@@ -364,4 +364,4 @@ if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir, { recursive: true });
 }
 fs.writeFileSync(path.join(dir, "products.ts"), fileContent, "utf8");
-console.log("Generated 150 products in src/data/products.ts with rotating real Unsplash images and diverse geographies!");
+console.log("Generated 30 products in src/data/products.ts with rotating real Unsplash images and diverse geographies!");
