@@ -34,6 +34,9 @@ export default function MarketplacePage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isOrganicOnly, setIsOrganicOnly] = useState(false);
   const [selectedGrade, setSelectedGrade] = useState("all");
+  const [sortBy, setSortBy] = useState("default");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
   
   // Views: 'grid' or 'map'
   const [viewMode, setViewMode] = useState<"grid" | "map">("grid");
@@ -117,8 +120,18 @@ export default function MarketplacePage() {
     const matchesCategory = selectedCategory === "all" || crop.category === selectedCategory;
     const matchesOrganic = !isOrganicOnly || crop.isOrganic;
     const matchesGrade = selectedGrade === "all" || crop.grade === selectedGrade;
+
+    // Price range filters
+    const matchesMinPrice = minPrice === "" || crop.price >= parseFloat(minPrice);
+    const matchesMaxPrice = maxPrice === "" || crop.price <= parseFloat(maxPrice);
     
-    return matchesSearch && matchesCategory && matchesOrganic && matchesGrade;
+    return matchesSearch && matchesCategory && matchesOrganic && matchesGrade && matchesMinPrice && matchesMaxPrice;
+  }).sort((a, b) => {
+    if (sortBy === "price-low") return a.price - b.price;
+    if (sortBy === "price-high") return b.price - a.price;
+    if (sortBy === "rating") return b.rating - a.rating;
+    if (sortBy === "stock") return b.stock - a.stock;
+    return 0; // default
   });
 
   // Cart operations
@@ -453,93 +466,165 @@ export default function MarketplacePage() {
           /* VIEW MODE: GRID CATALOG & FILTERS */
           <>
             {/* Filter Toolbar */}
-            <div className="glass-panel p-6 mb-8 shadow-glass-soft border-white/50 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+            <div className="glass-panel p-6 mb-8 shadow-glass-soft border-white/50 space-y-4">
               
-              {/* Category Filter */}
-              <div className="lg:col-span-4">
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
-                  {isUrdu ? "اقسام" : "Category"}
-                </label>
-                <div className="flex flex-wrap gap-1.5">
-                  {[
-                    { id: "all", labelEn: "All", labelUr: "سب" },
-                    { id: "fruits", labelEn: "Fruits", labelUr: "پھل" },
-                    { id: "vegetables", labelEn: "Vegetables", labelUr: "سبزیاں" },
-                    { id: "dairy", labelEn: "Dairy", labelUr: "دودھ/گھی" },
-                    { id: "grains", labelEn: "Grains", labelUr: "اناج" },
-                    { id: "nuts", labelEn: "Nuts", labelUr: "خشک میوہ" }
-                  ].map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => setSelectedCategory(cat.id)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all min-h-[38px] ${selectedCategory === cat.id ? 'bg-primary text-white shadow-sm' : 'bg-white hover:bg-sage/10 border border-primary/10 text-primary'}`}
-                    >
-                      {isUrdu ? cat.labelUr : cat.labelEn}
-                    </button>
-                  ))}
+              {/* Row 1: Category, Search, Distance, Grade */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+                {/* Category Filter */}
+                <div className="lg:col-span-4">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
+                    {isUrdu ? "اقسام" : "Category"}
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { id: "all", labelEn: "All", labelUr: "سب" },
+                      { id: "fruits", labelEn: "Fruits", labelUr: "پھل" },
+                      { id: "vegetables", labelEn: "Vegetables", labelUr: "سبزیاں" },
+                      { id: "dairy", labelEn: "Dairy", labelUr: "دودھ/گھی" },
+                      { id: "grains", labelEn: "Grains", labelUr: "اناج" },
+                      { id: "nuts", labelEn: "Nuts", labelUr: "خشک میوہ" }
+                    ].map((cat) => (
+                      <button
+                        key={cat.id}
+                        onClick={() => setSelectedCategory(cat.id)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all min-h-[38px] ${selectedCategory === cat.id ? 'bg-primary text-white shadow-sm' : 'bg-white hover:bg-sage/10 border border-primary/10 text-primary'}`}
+                      >
+                        {isUrdu ? cat.labelUr : cat.labelEn}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Search input */}
-              <div className="lg:col-span-3">
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
-                  {isUrdu ? "فصلیں تلاش کریں" : "Search Crops"}
-                </label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" size={16} />
+                {/* Search input */}
+                <div className="lg:col-span-3">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
+                    {isUrdu ? "فصلیں تلاش کریں" : "Search Crops"}
+                  </label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/40" size={16} />
+                    <input 
+                      type="text" 
+                      placeholder={isUrdu ? "فصل، علاقہ یا کسان تلاش کریں..." : "Search name, region..."}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/70 border border-primary/10 focus:outline-none focus:ring-2 focus:ring-primary text-xs font-sans min-h-[38px]"
+                    />
+                  </div>
+                </div>
+
+                {/* Radius filter */}
+                <div className="lg:col-span-2">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5 flex justify-between">
+                    <span>{isUrdu ? "کسان کا فاصلہ" : "Farmer Distance"}</span>
+                    <span className="text-primary font-bold">{radius} km</span>
+                  </label>
                   <input 
-                    type="text" 
-                    placeholder={isUrdu ? "فصل، علاقہ یا کسان تلاش کریں..." : "Search name, region..."}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/70 border border-primary/10 focus:outline-none focus:ring-2 focus:ring-primary text-xs font-sans min-h-[38px]"
+                    type="range" 
+                    min="5" 
+                    max="150" 
+                    value={radius}
+                    onChange={(e) => setRadius(parseInt(e.target.value))}
+                    className="w-full accent-primary h-2 bg-sage/60 rounded-lg cursor-pointer my-3.5"
                   />
                 </div>
+
+                {/* Grade & Organic filter */}
+                <div className="lg:col-span-3 grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
+                      {isUrdu ? "معیار کا گریڈ" : "Quality Grade"}
+                    </label>
+                    <select
+                      value={selectedGrade}
+                      onChange={(e) => setSelectedGrade(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-primary/10 bg-white/70 focus:outline-none focus:ring-2 focus:ring-primary text-xs font-sans min-h-[38px]"
+                    >
+                      <option value="all">{isUrdu ? "تمام گریڈز" : "All Grades"}</option>
+                      <option value="A">{isUrdu ? "گریڈ A" : "Grade A"}</option>
+                      <option value="B">{isUrdu ? "گریڈ B" : "Grade B"}</option>
+                      <option value="Premium">{isUrdu ? "پریمیئم" : "Premium"}</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col justify-end">
+                    <label className="flex items-center gap-2 cursor-pointer py-2">
+                      <input 
+                        type="checkbox"
+                        checked={isOrganicOnly}
+                        onChange={() => setIsOrganicOnly(!isOrganicOnly)}
+                        className="rounded text-primary border-primary/20 accent-primary w-4 h-4 cursor-pointer"
+                      />
+                      <span className="text-xs font-bold text-foreground/75">{isUrdu ? "نامیاتی تصدیق" : "Organic Certified"}</span>
+                    </label>
+                  </div>
+                </div>
               </div>
 
-              {/* Radius filter */}
-              <div className="lg:col-span-2">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5 flex justify-between">
-                  <span>{isUrdu ? "کسان کا فاصلہ" : "Farmer Distance"}</span>
-                  <span className="text-primary font-bold">{radius} km</span>
-                </label>
-                <input 
-                  type="range" 
-                  min="5" 
-                  max="150" 
-                  value={radius}
-                  onChange={(e) => setRadius(parseInt(e.target.value))}
-                  className="w-full accent-primary h-2 bg-sage/60 rounded-lg cursor-pointer my-3.5"
-                />
-              </div>
+              {/* Row 2: Sort, Price Range, and Reset */}
+              <div className="border-t border-sage/20 pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                {/* Price Range */}
+                <div className="flex gap-2 items-center">
+                  <div className="flex-grow">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1">
+                      {isUrdu ? "کم سے کم قیمت (روپے)" : "Min Price (Rs.)"}
+                    </label>
+                    <input 
+                      type="number" 
+                      placeholder="Min"
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(e.target.value)}
+                      className="w-full px-3 py-1.5 rounded-xl border border-primary/10 bg-white/70 text-xs font-sans min-h-[38px] focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                  <div className="flex-grow">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1">
+                      {isUrdu ? "زیادہ سے زیادہ قیمت (روپے)" : "Max Price (Rs.)"}
+                    </label>
+                    <input 
+                      type="number" 
+                      placeholder="Max"
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(e.target.value)}
+                      className="w-full px-3 py-1.5 rounded-xl border border-primary/10 bg-white/70 text-xs font-sans min-h-[38px] focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                </div>
 
-              {/* Grade & Organic filter */}
-              <div className="lg:col-span-3 grid grid-cols-2 gap-3">
+                {/* Sort By */}
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1.5">
-                    {isUrdu ? "معیار کا گریڈ" : "Quality Grade"}
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/75 mb-1">
+                    {isUrdu ? "ترتیب دیں" : "Sort By"}
                   </label>
                   <select
-                    value={selectedGrade}
-                    onChange={(e) => setSelectedGrade(e.target.value)}
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl border border-primary/10 bg-white/70 focus:outline-none focus:ring-2 focus:ring-primary text-xs font-sans min-h-[38px]"
                   >
-                    <option value="all">{isUrdu ? "تمام گریڈز" : "All Grades"}</option>
-                    <option value="A">{isUrdu ? "گریڈ A" : "Grade A"}</option>
-                    <option value="B">{isUrdu ? "گریڈ B" : "Grade B"}</option>
-                    <option value="Premium">{isUrdu ? "پریمیئم" : "Premium"}</option>
+                    <option value="default">{isUrdu ? "ڈیفالٹ (ترتیب)" : "Default Order"}</option>
+                    <option value="price-low">{isUrdu ? "قیمت: کم سے زیادہ" : "Price: Low to High"}</option>
+                    <option value="price-high">{isUrdu ? "قیمت: زیادہ سے کم" : "Price: High to Low"}</option>
+                    <option value="rating">{isUrdu ? "درجہ بندی (ریٹنگ)" : "Customer Rating"}</option>
+                    <option value="stock">{isUrdu ? "سٹاک کی مقدار" : "Available Stock"}</option>
                   </select>
                 </div>
-                <div className="flex flex-col justify-end">
-                  <label className="flex items-center gap-2 cursor-pointer py-2">
-                    <input 
-                      type="checkbox"
-                      checked={isOrganicOnly}
-                      onChange={() => setIsOrganicOnly(!isOrganicOnly)}
-                      className="rounded text-primary border-primary/20 accent-primary w-4 h-4 cursor-pointer"
-                    />
-                    <span className="text-xs font-bold text-foreground/75">{isUrdu ? "نامیاتی تصدیق" : "Organic Certified"}</span>
-                  </label>
+
+                {/* Reset filters button */}
+                <div className="flex md:justify-end items-end h-full">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setRadius(30);
+                      setSelectedCategory("all");
+                      setIsOrganicOnly(false);
+                      setSelectedGrade("all");
+                      setSortBy("default");
+                      setMinPrice("");
+                      setMaxPrice("");
+                    }}
+                    className="px-6 py-2 bg-sage/40 hover:bg-sage/70 text-primary-dark rounded-xl text-xs font-bold transition-all min-h-[38px]"
+                  >
+                    {isUrdu ? "تمام فلٹرز ختم کریں" : "Reset All Filters"}
+                  </button>
                 </div>
               </div>
 

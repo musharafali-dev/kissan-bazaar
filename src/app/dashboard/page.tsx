@@ -9,35 +9,105 @@ import {
   AlertTriangle, 
   TrendingUp, 
   Upload, 
-  Calendar, 
   Layers, 
-  DollarSign, 
   Sparkles,
   Trash2,
-  Edit3
+  Edit3,
+  X,
+  CheckCircle2,
+  User,
+  Phone,
+  MapPin,
+  ShieldCheck
 } from "lucide-react";
 import { useLanguageStore } from "@/stores/useLanguageStore";
+
+interface Crop {
+  id: number;
+  nameEn: string;
+  nameUr: string;
+  qty: number;
+  price: number;
+  grade: string;
+  harvest: string;
+  status: string;
+}
 
 export default function DashboardPage() {
   const { isUrdu } = useLanguageStore();
   const [activeTab, setActiveTab] = useState("inventory");
-  const [crops, setCrops] = useState([
+  const [crops, setCrops] = useState<Crop[]>([
     { id: 1, nameEn: "Gilgit Apricots", nameUr: "گلگت خوبانی", qty: 350, price: 180, grade: "A", harvest: "2026-07-01", status: "Active" },
     { id: 2, nameEn: "Swat Tomatoes", nameUr: "سوات ٹماٹر", qty: 45, price: 120, grade: "A", harvest: "2026-07-02", status: "Low Stock" },
     { id: 3, nameEn: "Red Potatoes", nameUr: "سرخ آلو", qty: 1200, price: 80, grade: "B", harvest: "2026-06-29", status: "Active" }
   ]);
 
-  // Form states
-  const [cropName, setCropName] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [price, setPrice] = useState("");
-  const [grade, setGrade] = useState("A");
+  // ── Edit Modal state ─────────────────────────────────────────────────────
+  const [editingCrop, setEditingCrop] = useState<Crop | null>(null);
+  const [editSaved, setEditSaved]     = useState(false);
+  const [editForm, setEditForm]       = useState({ nameEn: "", nameUr: "", qty: "", price: "", grade: "A", harvest: "" });
+
+  const openEditModal = (crop: Crop) => {
+    setEditingCrop(crop);
+    setEditSaved(false);
+    setEditForm({
+      nameEn:  crop.nameEn,
+      nameUr:  crop.nameUr,
+      qty:     String(crop.qty),
+      price:   String(crop.price),
+      grade:   crop.grade,
+      harvest: crop.harvest,
+    });
+  };
+
+  const handleEditSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCrop) return;
+    const updatedQty = parseFloat(editForm.qty);
+    setCrops(prev =>
+      prev.map(c =>
+        c.id === editingCrop.id
+          ? { ...c, nameEn: editForm.nameEn, nameUr: editForm.nameUr, qty: updatedQty, price: parseFloat(editForm.price), grade: editForm.grade, harvest: editForm.harvest, status: updatedQty < 50 ? "Low Stock" : "Active" }
+          : c
+      )
+    );
+    setEditSaved(true);
+    setTimeout(() => {
+      setEditingCrop(null);
+      setEditSaved(false);
+    }, 1200);
+  };
+
+  // ── Farmer Profile state ─────────────────────────────────────────────────
+  const [profile, setProfile] = useState({
+    nameEn:  "Sajid Ali",
+    nameUr:  "ساجد علی",
+    phone:   "0333-1234567",
+    cnic:    "42201-1234567-8",
+    village: "Karimabad, Hunza",
+    district:"Hunza-Nagar, GB",
+    bankAccount: "HBL – 1234567890",
+    bio:     "Mountain farmer growing organic apricots, cherries and walnuts since 2005.",
+  });
+  const [profileSaved, setProfileSaved] = useState(false);
+
+  const handleProfileSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfileSaved(true);
+    setTimeout(() => setProfileSaved(false), 2000);
+  };
+
+  // Form states (Add crop)
+  const [cropName, setCropName]       = useState("");
+  const [quantity, setQuantity]       = useState("");
+  const [price, setPrice]             = useState("");
+  const [grade, setGrade]             = useState("A");
   const [harvestDate, setHarvestDate] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
 
   // File Upload states
-  const [csvFile, setCsvFile] = useState<File | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [csvFile, setCsvFile]                 = useState<File | null>(null);
+  const [isDragging, setIsDragging]           = useState(false);
   const [csvUploadSuccess, setCsvUploadSuccess] = useState(false);
 
   // Add Crop Listing Handler (3-tap setup)
@@ -109,6 +179,7 @@ export default function DashboardPage() {
   };
 
   return (
+    <>
     <div className={`min-h-screen bg-gradient-to-br from-offwhite to-sage/20 p-4 md:p-8 ${isUrdu ? "rtl-grid text-right" : ""}`} dir={isUrdu ? "rtl" : "ltr"}>
       <div className="max-w-7xl mx-auto">
         
@@ -171,6 +242,13 @@ export default function DashboardPage() {
             <BarChart3 size={18} />
             <span>{isUrdu ? "فروخت اور تجزیہ" : "Sales & Trends"}</span>
           </button>
+          <button 
+            onClick={() => setActiveTab("profile")}
+            className={`flex items-center gap-2 px-4 py-3 text-sm font-bold rounded-t-xl transition-all whitespace-nowrap min-h-[48px] ${activeTab === "profile" ? 'bg-primary text-white shadow-md' : 'text-primary-dark hover:bg-sage/20'}`}
+          >
+            <User size={18} />
+            <span>{isUrdu ? "میری پروفائل" : "My Profile"}</span>
+          </button>
         </div>
 
         {/* TAB CONTENT 1: ACTIVE INVENTORY */}
@@ -221,13 +299,18 @@ export default function DashboardPage() {
                         </td>
                         <td className="py-4 px-6 text-center">
                           <div className="flex justify-center items-center gap-2">
-                            <button className="p-2 hover:bg-primary/10 rounded-full text-primary transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center" aria-label="Edit">
+                            <button 
+                              onClick={() => openEditModal(crop)}
+                              className="p-2 hover:bg-primary/10 rounded-full text-primary transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center" 
+                              aria-label="Edit crop"
+                              title={isUrdu ? "تدوین کریں" : "Edit crop"}
+                            >
                               <Edit3 size={16} />
                             </button>
                             <button 
                               onClick={() => handleDeleteCrop(crop.id)}
                               className="p-2 hover:bg-red-50 rounded-full text-red-600 transition-colors min-h-[48px] min-w-[48px] flex items-center justify-center" 
-                              aria-label="Delete"
+                              aria-label="Delete crop"
                             >
                               <Trash2 size={16} />
                             </button>
@@ -559,7 +642,297 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {/* ─── TAB: FARMER PROFILE EDIT ───────────────────────────────────────── */}
+        {activeTab === "profile" && (
+          <div className="max-w-2xl mx-auto">
+            <form onSubmit={handleProfileSave} className="glass-panel p-6 md:p-8 border-white/60 shadow-glass space-y-5">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <User size={28} />
+                </div>
+                <div>
+                  <h2 className="text-xl font-heading font-black text-primary-dark">
+                    {isUrdu ? "پروفائل تدوین" : "Edit Farmer Profile"}
+                  </h2>
+                  <p className="text-xs text-foreground/50">{isUrdu ? "آپ کی معلومات خریداروں کو دکھائی جاتی ہے۔" : "Your info is shown to buyers on listings."}</p>
+                </div>
+              </div>
+
+              {/* Name row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground/75 mb-1">
+                    {isUrdu ? "نام (انگریزی)" : "Full Name (English)"}
+                  </label>
+                  <input
+                    value={profile.nameEn}
+                    onChange={e => setProfile(p => ({ ...p, nameEn: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl border border-primary/10 bg-white/70 focus:outline-none focus:ring-2 focus:ring-primary text-sm font-sans min-h-[48px]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground/75 mb-1">
+                    {isUrdu ? "نام (اردو)" : "Full Name (Urdu)"}
+                  </label>
+                  <input
+                    dir="rtl"
+                    value={profile.nameUr}
+                    onChange={e => setProfile(p => ({ ...p, nameUr: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl border border-primary/10 bg-white/70 focus:outline-none focus:ring-2 focus:ring-primary text-sm font-sans min-h-[48px]"
+                  />
+                </div>
+              </div>
+
+              {/* Phone & CNIC */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground/75 mb-1 flex items-center gap-1">
+                    <Phone size={11} /> {isUrdu ? "موبائل نمبر" : "Mobile Number"}
+                  </label>
+                  <input
+                    type="tel"
+                    value={profile.phone}
+                    onChange={e => setProfile(p => ({ ...p, phone: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl border border-primary/10 bg-white/70 focus:outline-none focus:ring-2 focus:ring-primary text-sm font-sans min-h-[48px]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground/75 mb-1 flex items-center gap-1">
+                    <ShieldCheck size={11} /> {isUrdu ? "شناختی کارڈ نمبر" : "CNIC Number"}
+                  </label>
+                  <input
+                    value={profile.cnic}
+                    onChange={e => setProfile(p => ({ ...p, cnic: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl border border-primary/10 bg-white/70 focus:outline-none focus:ring-2 focus:ring-primary text-sm font-sans min-h-[48px]"
+                    placeholder="#####-#######-#"
+                  />
+                </div>
+              </div>
+
+              {/* Village & District */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground/75 mb-1 flex items-center gap-1">
+                    <MapPin size={11} /> {isUrdu ? "گاؤں / محلہ" : "Village / Area"}
+                  </label>
+                  <input
+                    value={profile.village}
+                    onChange={e => setProfile(p => ({ ...p, village: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl border border-primary/10 bg-white/70 focus:outline-none focus:ring-2 focus:ring-primary text-sm font-sans min-h-[48px]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground/75 mb-1">
+                    {isUrdu ? "ضلع" : "District / Province"}
+                  </label>
+                  <input
+                    value={profile.district}
+                    onChange={e => setProfile(p => ({ ...p, district: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl border border-primary/10 bg-white/70 focus:outline-none focus:ring-2 focus:ring-primary text-sm font-sans min-h-[48px]"
+                  />
+                </div>
+              </div>
+
+              {/* Bank Account */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-foreground/75 mb-1">
+                  {isUrdu ? "بینک اکاؤنٹ / جاز کیش / ایزی پیسہ" : "Bank Account / JazzCash / EasyPaisa"}
+                </label>
+                <input
+                  value={profile.bankAccount}
+                  onChange={e => setProfile(p => ({ ...p, bankAccount: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl border border-primary/10 bg-white/70 focus:outline-none focus:ring-2 focus:ring-primary text-sm font-sans min-h-[48px]"
+                  placeholder={isUrdu ? "بینک نام – اکاؤنٹ نمبر" : "Bank Name – Account Number"}
+                />
+              </div>
+
+              {/* Bio */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-foreground/75 mb-1">
+                  {isUrdu ? "مختصر تعارف" : "Short Bio (shown to buyers)"}
+                </label>
+                <textarea
+                  rows={3}
+                  value={profile.bio}
+                  onChange={e => setProfile(p => ({ ...p, bio: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl border border-primary/10 bg-white/70 focus:outline-none focus:ring-2 focus:ring-primary text-sm font-sans resize-none"
+                  placeholder={isUrdu ? "اپنے فارم کے بارے میں لکھیں..." : "Tell buyers about your farm..."}
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 px-6 rounded-full transition-colors flex items-center justify-center gap-2 shadow-md min-h-[48px]"
+              >
+                {profileSaved
+                  ? <><CheckCircle2 size={18} /><span>{isUrdu ? "پروفائل محفوظ ہو گئی!" : "Profile Saved!"}</span></>
+                  : <><ShieldCheck size={18} /><span>{isUrdu ? "پروفائل محفوظ کریں" : "Save Profile"}</span></>}
+              </button>
+            </form>
+          </div>
+        )}
       </div>
     </div>
+
+    {/* ─────────────────────────────────────────────────────────────────── */}
+    {/* EDIT CROP MODAL                                                    */}
+    {/* ─────────────────────────────────────────────────────────────────── */}
+    {editingCrop && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(6px)" }}
+        onClick={(e) => { if (e.target === e.currentTarget) setEditingCrop(null); }}
+      >
+        <div className="w-full max-w-lg bg-white/95 rounded-3xl shadow-2xl overflow-hidden animate-fade-in">
+          {/* Modal header */}
+          <div className="bg-primary px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Edit3 size={20} className="text-white" />
+              <h3 className="text-white font-heading font-black text-lg">
+                {isUrdu ? "فصل کی تدوین" : "Edit Crop Listing"}
+              </h3>
+            </div>
+            <button
+              onClick={() => setEditingCrop(null)}
+              className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors text-white"
+              aria-label="Close"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {editSaved ? (
+            <div className="p-10 text-center">
+              <CheckCircle2 size={48} className="text-green-500 mx-auto mb-3" />
+              <h4 className="text-lg font-heading font-black text-primary-dark">
+                {isUrdu ? "تبدیلیاں محفوظ ہو گئیں!" : "Changes Saved!"}
+              </h4>
+              <p className="text-xs text-foreground/50 mt-1">{isUrdu ? "انوینٹری اپ ڈیٹ ہو گئی۔" : "Your inventory has been updated."}</p>
+            </div>
+          ) : (
+            <form onSubmit={handleEditSave} className="p-6 space-y-4">
+
+              {/* Crop Name */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1">
+                    {isUrdu ? "فصل کا نام (انگریزی)" : "Crop Name (English)"}
+                  </label>
+                  <input
+                    value={editForm.nameEn}
+                    onChange={e => setEditForm(f => ({ ...f, nameEn: e.target.value }))}
+                    className="w-full px-4 py-2.5 rounded-xl border border-primary/15 bg-white focus:outline-none focus:ring-2 focus:ring-primary text-sm font-sans min-h-[44px]"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1">
+                    {isUrdu ? "فصل کا نام (اردو)" : "Crop Name (Urdu)"}
+                  </label>
+                  <input
+                    dir="rtl"
+                    value={editForm.nameUr}
+                    onChange={e => setEditForm(f => ({ ...f, nameUr: e.target.value }))}
+                    className="w-full px-4 py-2.5 rounded-xl border border-primary/15 bg-white focus:outline-none focus:ring-2 focus:ring-primary text-sm font-sans min-h-[44px]"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Qty & Price */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1">
+                    {isUrdu ? "مقدار (کلو)" : "Quantity (kg)"}
+                  </label>
+                  <input
+                    type="number" min="1"
+                    value={editForm.qty}
+                    onChange={e => setEditForm(f => ({ ...f, qty: e.target.value }))}
+                    className="w-full px-4 py-2.5 rounded-xl border border-primary/15 bg-white focus:outline-none focus:ring-2 focus:ring-primary text-sm font-sans min-h-[44px]"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1">
+                    {isUrdu ? "قیمت فی کلو (روپے)" : "Price / kg (Rs.)"}
+                  </label>
+                  <input
+                    type="number" min="1"
+                    value={editForm.price}
+                    onChange={e => setEditForm(f => ({ ...f, price: e.target.value }))}
+                    className="w-full px-4 py-2.5 rounded-xl border border-primary/15 bg-white focus:outline-none focus:ring-2 focus:ring-primary text-sm font-sans min-h-[44px]"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Grade & Harvest */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1">
+                    {isUrdu ? "معیار کا گریڈ" : "Quality Grade"}
+                  </label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {["A", "B", "Premium"].map(g => (
+                      <button
+                        type="button" key={g}
+                        onClick={() => setEditForm(f => ({ ...f, grade: g }))}
+                        className={`py-2 rounded-xl text-xs font-bold border transition-all min-h-[40px] ${
+                          editForm.grade === g
+                            ? 'bg-primary text-white border-primary'
+                            : 'bg-white hover:bg-sage/10 border-primary/15 text-primary-dark'
+                        }`}
+                      >
+                        {g}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-1">
+                    {isUrdu ? "کٹائی کی تاریخ" : "Harvest Date"}
+                  </label>
+                  <input
+                    type="date"
+                    value={editForm.harvest}
+                    onChange={e => setEditForm(f => ({ ...f, harvest: e.target.value }))}
+                    className="w-full px-4 py-2.5 rounded-xl border border-primary/15 bg-white focus:outline-none focus:ring-2 focus:ring-primary text-sm font-sans min-h-[44px]"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Preview pill */}
+              <div className="bg-sage/20 rounded-2xl p-3 flex items-center gap-3">
+                <span className="text-[10px] font-bold text-foreground/50 uppercase tracking-wider shrink-0">{isUrdu ? "پیش نظارہ" : "Preview"}:</span>
+                <span className="text-sm font-extrabold text-primary-dark">{editForm.nameEn}</span>
+                <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded-full">{editForm.grade}</span>
+                <span className="text-xs font-bold text-foreground/70 ml-auto">Rs. {editForm.price} / kg</span>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingCrop(null)}
+                  className="flex-1 py-3 rounded-full border border-primary/20 text-primary-dark font-bold text-sm hover:bg-sage/20 transition-colors min-h-[48px]"
+                >
+                  {isUrdu ? "منسوخ کریں" : "Cancel"}
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 rounded-full bg-primary hover:bg-primary-dark text-white font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-md min-h-[48px]"
+                >
+                  <CheckCircle2 size={16} />
+                  {isUrdu ? "تبدیلیاں محفوظ کریں" : "Save Changes"}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    )}
+    </>
   );
 }
