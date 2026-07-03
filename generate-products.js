@@ -6,9 +6,9 @@ const categories = ["fruits", "vegetables", "dairy", "grains", "nuts"];
 const unsplashImages = {
   // FRUITS - each array contains ONLY photos of that fruit
   "apricots": [
-    "https://images.unsplash.com/photo-1501256403862-74d627250eec?w=500&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1595908129746-57ca1a63dd4d?w=500&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1568393691622-c7ba131d63b6?w=500&auto=format&fit=crop&q=60"
+    "/products/Fresh Apricots.jpg",
+    "/products/Fresh Apricots.jpg",
+    "/products/Fresh Apricots.jpg"
   ],
   "apples": [
     "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=500&auto=format&fit=crop&q=60",
@@ -31,9 +31,9 @@ const unsplashImages = {
     "https://images.unsplash.com/photo-1511630558655-5d3bec585396?w=500&auto=format&fit=crop&q=60"
   ],
   "plums": [
-    "https://images.unsplash.com/photo-1519519166523-17a3b4e86e83?w=500&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1603813860913-df9a242f3fee?w=500&auto=format&fit=crop&q=60"
+    "/products/Plums.jpg",
+    "/products/Plums.jpg",
+    "/products/Plums.jpg"
   ],
   "pears": [
     "https://images.unsplash.com/photo-1514896856000-9115de81aad9?w=500&auto=format&fit=crop&q=60",
@@ -63,9 +63,9 @@ const unsplashImages = {
     "https://images.unsplash.com/photo-1607305387299-a3d9611cd469?w=500&auto=format&fit=crop&q=60"
   ],
   "potatoes": [
-    "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=500&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1508313880080-c4bef0730395?w=500&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=500&auto=format&fit=crop&q=60"
+    "/products/potatoes.jpg",
+    "/products/potatoes.jpg",
+    "/products/potatoes.jpg"
   ],
   "onions": [
     "https://images.unsplash.com/photo-1618512496248-a07fe83766c5?w=500&auto=format&fit=crop&q=60",
@@ -88,9 +88,9 @@ const unsplashImages = {
     "https://images.unsplash.com/photo-1615484477778-ca3b77940c25?w=500&auto=format&fit=crop&q=60"
   ],
   "cauliflower": [
-    "https://images.unsplash.com/photo-1568584711075-3d021a7c3ecf?w=500&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=500&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1612257416648-1c3825c7c23a?w=500&auto=format&fit=crop&q=60"
+    "/products/Cauliflower.jpg",
+    "/products/Cauliflower.jpg",
+    "/products/Cauliflower.jpg"
   ],
   "cabbage": [
     "https://images.unsplash.com/photo-1516594798947-e65505dbb29d?w=500&auto=format&fit=crop&q=60",
@@ -120,9 +120,9 @@ const unsplashImages = {
     "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=500&auto=format&fit=crop&q=60"
   ],
   "organic honey": [
-    "https://images.unsplash.com/photo-1471193945509-9ad0617afabf?w=500&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=500&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1504472478235-9bc48ba4d60f?w=500&auto=format&fit=crop&q=60"
+    "/products/Organic Honey.jpg",
+    "/products/Organic Honey.jpg",
+    "/products/Organic Honey.jpg"
   ],
   "fresh milk": [
     "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=500&auto=format&fit=crop&q=60",
@@ -152,9 +152,9 @@ const unsplashImages = {
     "https://images.unsplash.com/photo-1606914469633-bd10ef557fe1?w=500&auto=format&fit=crop&q=60"
   ],
   "red lentils": [
-    "https://images.unsplash.com/photo-1634201980997-6c498f9c6f40?w=500&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1505253758473-96b7015fcd40?w=500&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1547058886-af77d28796de?w=500&auto=format&fit=crop&q=60"
+    "/products/Red Lentils.jpg",
+    "/products/Red Lentils.jpg",
+    "/products/Red Lentils.jpg"
   ],
   "maize grain": [
     "https://images.unsplash.com/photo-1551754625-70c90487595e?w=500&auto=format&fit=crop&q=60",
@@ -184,9 +184,9 @@ const unsplashImages = {
     "https://images.unsplash.com/photo-1630510685509-7f7e4b76dc9b?w=500&auto=format&fit=crop&q=60"
   ],
   "dried apricots": [
-    "https://images.unsplash.com/photo-1617898791843-0ba3d1398d2e?w=500&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1575556609835-0bd3e79d0e5d?w=500&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1594911772125-07fc7a2d8d9f?w=500&auto=format&fit=crop&q=60"
+    "/products/Dried Apricots.jpg",
+    "/products/Dried Apricots.jpg",
+    "/products/Dried Apricots.jpg"
   ]
 };
 
