@@ -686,7 +686,7 @@ export default function DashboardPage() {
               {/* Phone & CNIC */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground/75 mb-1 flex items-center gap-1">
+                  <label className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-foreground/75 mb-1">
                     <Phone size={11} /> {isUrdu ? "موبائل نمبر" : "Mobile Number"}
                   </label>
                   <input
@@ -697,7 +697,7 @@ export default function DashboardPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground/75 mb-1 flex items-center gap-1">
+                  <label className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-foreground/75 mb-1">
                     <ShieldCheck size={11} /> {isUrdu ? "شناختی کارڈ نمبر" : "CNIC Number"}
                   </label>
                   <input
@@ -712,7 +712,7 @@ export default function DashboardPage() {
               {/* Village & District */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-foreground/75 mb-1 flex items-center gap-1">
+                  <label className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-foreground/75 mb-1">
                     <MapPin size={11} /> {isUrdu ? "گاؤں / محلہ" : "Village / Area"}
                   </label>
                   <input
